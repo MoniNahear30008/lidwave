@@ -10,8 +10,8 @@ namespace lidwave
         {
             InitializeComponent();
 
-            fftPlot.Configuration.DoubleClickBenchmark = false;
-            fftPlot.Configuration.LockVerticalAxis = true;
+            cftPlot.Configuration.DoubleClickBenchmark = false;
+            cftPlot.Configuration.LockVerticalAxis = true;
             peaksView.Rows.Add(0, "na", "na");
             peaksView.Rows.Add(1, "na", "na");
 
@@ -35,7 +35,7 @@ namespace lidwave
             plotCFAR_Res();
             for (int i = 0; i < cfar.eth.Count; i++)
             {
-                fftPlot.Plot.AddVerticalLine(cfar.eth[i][0], color: Color.Red, style: LineStyle.DashDot);
+                cftPlot.Plot.AddVerticalLine(cfar.eth[i][0], color: Color.Red, style: LineStyle.DashDot);
                 therr.Items.Add(cfar.eth[i][0].ToString() + ":     " + cfar.eth[i][1].ToString() + "         " + cfar.eth[i][2].ToString());
             }
         }
@@ -62,15 +62,15 @@ namespace lidwave
             double[] dbuff = Array.ConvertAll<uint, double>(cfar.tvs[bnum].fft.ToArray(), x => x);
             double[] dth = Array.ConvertAll<uint, double>(cfar.tvs[bnum].ths.ToArray(), x => x);
 
-            fftPlot.Plot.Clear();
-            fftPlot.Plot.AddScatter(X, dbuff, lineWidth: 1, color: Color.Blue, markerShape: ScottPlot.MarkerShape.filledCircle);
-            fftPlot.Plot.AddScatter(X, dth, lineWidth: 0, color: Color.Red);
+            cftPlot.Plot.Clear();
+            cftPlot.Plot.AddScatter(X, dbuff, lineWidth: 1, color: Color.Blue, markerShape: ScottPlot.MarkerShape.filledCircle);
+            cftPlot.Plot.AddScatter(X, dth, lineWidth: 0, color: Color.Red);
             foreach (uint p in cfar.tvs[bnum].peaks)
-                fftPlot.Plot.AddVerticalLine(p, color: Color.Lime);
+                cftPlot.Plot.AddVerticalLine(p, color: Color.Lime);
 
-            fftPlot.Plot.AxisAutoX();
-            fftPlot.Plot.AxisAutoY();
-            fftPlot.Refresh();
+            cftPlot.Plot.AxisAutoX();
+            cftPlot.Plot.AxisAutoY();
+            cftPlot.Refresh();
 
         }
 
@@ -78,13 +78,13 @@ namespace lidwave
         {
             int[] iX = Enumerable.Range(0, 2048).ToArray();
             double[] X = Array.ConvertAll<int, double>(iX, x => x);
-            fftPlot.Plot.Clear();
+            cftPlot.Plot.Clear();
 
             double[] dbuff = Array.ConvertAll<uint, double>(cfar.buff, x => x);
-            fftPlot.Plot.AddScatter(X, dbuff, lineWidth: 1, color: Color.Blue, markerShape: ScottPlot.MarkerShape.openCircle);
+            cftPlot.Plot.AddScatter(X, dbuff, lineWidth: 1, color: Color.Blue, markerShape: ScottPlot.MarkerShape.openCircle);
 
             double[] dTH = Array.ConvertAll<uint, double>(cfar.TH, x => x);
-            fftPlot.Plot.AddScatter(X, dTH, lineWidth: 0, color: Color.Red);
+            cftPlot.Plot.AddScatter(X, dTH, lineWidth: 0, color: Color.Red);
 
             List<double> X1 = new List<double>();
             List<double> Y1 = new List<double>();
@@ -97,28 +97,28 @@ namespace lidwave
                 }
             }
 
-            fftPlot.Plot.AddScatter(X1.ToArray(), Y1.ToArray(), lineWidth: 0, color: Color.Green, markerShape: ScottPlot.MarkerShape.filledCircle);
+            cftPlot.Plot.AddScatter(X1.ToArray(), Y1.ToArray(), lineWidth: 0, color: Color.Green, markerShape: ScottPlot.MarkerShape.filledCircle);
 
             if (cfar.peaks[0, 0] > 0)
             {
                 uint bin = cfar.peaks[0, 0];
                 double est = ((double)cfar.buff[bin + 1] - (double)cfar.buff[bin - 1]) / (2 * ((2 * (double)cfar.buff[bin]) - (double)cfar.buff[bin - 1] - (double)cfar.buff[bin + 1]));
-                fftPlot.Plot.AddVerticalLine(cfar.peaks[0, 0], color: Color.Lime);
-                fftPlot.Plot.AddVerticalLine(cfar.peaks[0, 0] + est, color: Color.Lime, style: LineStyle.Dash);
-                fftPlot.Plot.AddHorizontalLine(cfar.peaks[0, 1], color: Color.DarkViolet, style: LineStyle.Dot);
+                cftPlot.Plot.AddVerticalLine(cfar.peaks[0, 0], color: Color.Lime);
+                cftPlot.Plot.AddVerticalLine(cfar.peaks[0, 0] + est, color: Color.Lime, style: LineStyle.Dash);
+                cftPlot.Plot.AddHorizontalLine(cfar.peaks[0, 1], color: Color.DarkViolet, style: LineStyle.Dot);
             }
             if (cfar.peaks[1, 0] > 0)
             {
                 uint bin = cfar.peaks[1, 0];
                 double est = ((double)cfar.buff[bin + 1] - (double)cfar.buff[bin - 1]) / (2 * ((2 * (double)cfar.buff[bin]) - (double)cfar.buff[bin - 1] - (double)cfar.buff[bin + 1]));
-                fftPlot.Plot.AddVerticalLine(cfar.peaks[1, 0], color: Color.Lime);
-                fftPlot.Plot.AddVerticalLine(cfar.peaks[1, 0] + est, color: Color.Lime, style: LineStyle.Dash);
-                fftPlot.Plot.AddHorizontalLine(cfar.peaks[1, 1], color: Color.DarkViolet, style: LineStyle.Dot);
+                cftPlot.Plot.AddVerticalLine(cfar.peaks[1, 0], color: Color.Lime);
+                cftPlot.Plot.AddVerticalLine(cfar.peaks[1, 0] + est, color: Color.Lime, style: LineStyle.Dash);
+                cftPlot.Plot.AddHorizontalLine(cfar.peaks[1, 1], color: Color.DarkViolet, style: LineStyle.Dot);
             }
 
-            fftPlot.Plot.AxisAutoX();
-            fftPlot.Plot.AxisAutoY();
-            fftPlot.Refresh();
+            cftPlot.Plot.AxisAutoX();
+            cftPlot.Plot.AxisAutoY();
+            cftPlot.Refresh();
 
             //using (StreamWriter writetext = new StreamWriter("c:\\Lidwave\\Tools\\res.txt"))
             //{
@@ -134,6 +134,33 @@ namespace lidwave
         private void loadICSTV_Click(object sender, EventArgs e)
         {
             ics.loadIcsTv();
+            plotICS(false);
+        }
+        private void plotICS(bool res)
+        {
+
+            int[] iX = Enumerable.Range(0, 2048).ToArray();
+            double[] X = Array.ConvertAll<int, double>(iX, x => x);
+            double[] Y = Array.ConvertAll<uint, double>(ics.afterIcsTv.ToArray(), x => x);
+
+            icsPlot.Plot.Clear();
+            icsPlot.Plot.AddScatter(X, Y, lineWidth: 1, color: Color.Blue, markerShape: ScottPlot.MarkerShape.filledCircle);
+            if (res)
+            {
+                double[] Y1 = Array.ConvertAll<uint, double>(ics.afterIcsCalc.ToArray(), x => x);
+                icsPlot.Plot.AddScatter(X, Y1, lineWidth: 1, color: Color.Red, markerShape: ScottPlot.MarkerShape.filledCircle);
+            }
+
+            icsPlot.Plot.AxisAutoX();
+            icsPlot.Plot.AxisAutoY();
+            icsPlot.Refresh();
+
+        }
+
+        private void doICS_Click(object sender, EventArgs e)
+        {
+            ics.run();
+            plotICS(true);
         }
     }
 }

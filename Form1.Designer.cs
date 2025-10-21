@@ -30,6 +30,7 @@
         {
             tabControl1 = new TabControl();
             tabPage2 = new TabPage();
+            icsPlot = new ScottPlot.FormsPlot();
             IscTv = new Label();
             loadICSTV = new Button();
             tabPage1 = new TabPage();
@@ -53,13 +54,14 @@
             label2 = new Label();
             label1 = new Label();
             label3 = new Label();
-            fftPlot = new ScottPlot.FormsPlot();
+            cftPlot = new ScottPlot.FormsPlot();
             buffNum = new NumericUpDown();
             tvName = new Label();
             loadCFRTV = new Button();
             groupBox1 = new GroupBox();
             fromTV = new RadioButton();
             fromSum = new RadioButton();
+            doICS = new Button();
             tabControl1.SuspendLayout();
             tabPage2.SuspendLayout();
             tabPage1.SuspendLayout();
@@ -85,6 +87,8 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(doICS);
+            tabPage2.Controls.Add(icsPlot);
             tabPage2.Controls.Add(IscTv);
             tabPage2.Controls.Add(loadICSTV);
             tabPage2.Location = new Point(4, 29);
@@ -93,6 +97,14 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "ICS";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // icsPlot
+            // 
+            icsPlot.Location = new Point(347, 96);
+            icsPlot.Margin = new Padding(5, 4, 5, 4);
+            icsPlot.Name = "icsPlot";
+            icsPlot.Size = new Size(1057, 654);
+            icsPlot.TabIndex = 7;
             // 
             // IscTv
             // 
@@ -117,7 +129,7 @@
             // 
             tabPage1.Controls.Add(procBox);
             tabPage1.Controls.Add(label3);
-            tabPage1.Controls.Add(fftPlot);
+            tabPage1.Controls.Add(cftPlot);
             tabPage1.Controls.Add(buffNum);
             tabPage1.Controls.Add(tvName);
             tabPage1.Controls.Add(loadCFRTV);
@@ -279,7 +291,7 @@
             procBuff.Name = "procBuff";
             procBuff.Size = new Size(159, 31);
             procBuff.TabIndex = 5;
-            procBuff.Text = "Process buffer";
+            procBuff.Text = "Perform CFAR";
             procBuff.UseVisualStyleBackColor = true;
             procBuff.Click += procBuff_Click;
             // 
@@ -344,13 +356,13 @@
             label3.TabIndex = 11;
             label3.Text = "Buffer number to process";
             // 
-            // fftPlot
+            // cftPlot
             // 
-            fftPlot.Location = new Point(332, 128);
-            fftPlot.Margin = new Padding(5, 4, 5, 4);
-            fftPlot.Name = "fftPlot";
-            fftPlot.Size = new Size(1057, 654);
-            fftPlot.TabIndex = 6;
+            cftPlot.Location = new Point(346, 84);
+            cftPlot.Margin = new Padding(5, 4, 5, 4);
+            cftPlot.Name = "cftPlot";
+            cftPlot.Size = new Size(1057, 797);
+            cftPlot.TabIndex = 6;
             // 
             // buffNum
             // 
@@ -413,6 +425,16 @@
             fromSum.Text = "Previous phase";
             fromSum.UseVisualStyleBackColor = true;
             // 
+            // doICS
+            // 
+            doICS.Location = new Point(49, 108);
+            doICS.Name = "doICS";
+            doICS.Size = new Size(115, 43);
+            doICS.TabIndex = 8;
+            doICS.Text = "Perform ICS";
+            doICS.UseVisualStyleBackColor = true;
+            doICS.Click += doICS_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -450,7 +472,7 @@
         public Label tvName;
         private Button procBuff;
         public NumericUpDown buffNum;
-        private ScottPlot.FormsPlot fftPlot;
+        private ScottPlot.FormsPlot cftPlot;
         public NumericUpDown tBins;
         private Label label2;
         private Label label1;
@@ -472,5 +494,7 @@
         private ColumnHeader columnHeader1;
         public Label IscTv;
         private Button loadICSTV;
+        private ScottPlot.FormsPlot icsPlot;
+        private Button doICS;
     }
 }
