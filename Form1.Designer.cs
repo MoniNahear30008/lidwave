@@ -30,6 +30,8 @@
         {
             tabControl1 = new TabControl();
             tabPage2 = new TabPage();
+            IscTv = new Label();
+            loadICSTV = new Button();
             tabPage1 = new TabPage();
             procBox = new GroupBox();
             label6 = new Label();
@@ -38,6 +40,7 @@
             Column2 = new DataGridViewTextBoxColumn();
             Column3 = new DataGridViewTextBoxColumn();
             therr = new ListView();
+            columnHeader1 = new ColumnHeader();
             fail = new Label();
             pass = new Label();
             label5 = new Label();
@@ -53,12 +56,12 @@
             fftPlot = new ScottPlot.FormsPlot();
             buffNum = new NumericUpDown();
             tvName = new Label();
-            loadTV = new Button();
+            loadCFRTV = new Button();
             groupBox1 = new GroupBox();
             fromTV = new RadioButton();
             fromSum = new RadioButton();
-            columnHeader1 = new ColumnHeader();
             tabControl1.SuspendLayout();
+            tabPage2.SuspendLayout();
             tabPage1.SuspendLayout();
             procBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)peaksView).BeginInit();
@@ -82,12 +85,33 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(IscTv);
+            tabPage2.Controls.Add(loadICSTV);
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Size = new Size(1439, 960);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "ICS";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // IscTv
+            // 
+            IscTv.AutoSize = true;
+            IscTv.Location = new Point(177, 48);
+            IscTv.Name = "IscTv";
+            IscTv.Size = new Size(18, 20);
+            IscTv.TabIndex = 4;
+            IscTv.Text = "...";
+            // 
+            // loadICSTV
+            // 
+            loadICSTV.Location = new Point(49, 37);
+            loadICSTV.Name = "loadICSTV";
+            loadICSTV.Size = new Size(103, 43);
+            loadICSTV.TabIndex = 3;
+            loadICSTV.Text = "load TV";
+            loadICSTV.UseVisualStyleBackColor = true;
+            loadICSTV.Click += loadICSTV_Click;
             // 
             // tabPage1
             // 
@@ -96,7 +120,7 @@
             tabPage1.Controls.Add(fftPlot);
             tabPage1.Controls.Add(buffNum);
             tabPage1.Controls.Add(tvName);
-            tabPage1.Controls.Add(loadTV);
+            tabPage1.Controls.Add(loadCFRTV);
             tabPage1.Controls.Add(groupBox1);
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
@@ -192,6 +216,11 @@
             therr.TabIndex = 15;
             therr.UseCompatibleStateImageBehavior = false;
             therr.View = View.Details;
+            // 
+            // columnHeader1
+            // 
+            columnHeader1.Text = "Index   TV   Calc";
+            columnHeader1.Width = 150;
             // 
             // fail
             // 
@@ -340,15 +369,15 @@
             tvName.TabIndex = 2;
             tvName.Text = "...";
             // 
-            // loadTV
+            // loadCFRTV
             // 
-            loadTV.Location = new Point(204, 33);
-            loadTV.Name = "loadTV";
-            loadTV.Size = new Size(103, 43);
-            loadTV.TabIndex = 1;
-            loadTV.Text = "load TV";
-            loadTV.UseVisualStyleBackColor = true;
-            loadTV.Click += loadTV_Click;
+            loadCFRTV.Location = new Point(204, 33);
+            loadCFRTV.Name = "loadCFRTV";
+            loadCFRTV.Size = new Size(103, 43);
+            loadCFRTV.TabIndex = 1;
+            loadCFRTV.Text = "load TV";
+            loadCFRTV.UseVisualStyleBackColor = true;
+            loadCFRTV.Click += loadTV_Click;
             // 
             // groupBox1
             // 
@@ -384,11 +413,6 @@
             fromSum.Text = "Previous phase";
             fromSum.UseVisualStyleBackColor = true;
             // 
-            // columnHeader1
-            // 
-            columnHeader1.Text = "Index   TV   Calc";
-            columnHeader1.Width = 150;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -398,6 +422,8 @@
             Name = "Form1";
             Text = "Lidwave";
             tabControl1.ResumeLayout(false);
+            tabPage2.ResumeLayout(false);
+            tabPage2.PerformLayout();
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
             procBox.ResumeLayout(false);
@@ -420,29 +446,31 @@
         private GroupBox groupBox1;
         private RadioButton fromTV;
         private RadioButton fromSum;
-        private Button loadTV;
-        private Label tvName;
+        private Button loadCFRTV;
+        public Label tvName;
         private Button procBuff;
-        private NumericUpDown buffNum;
+        public NumericUpDown buffNum;
         private ScottPlot.FormsPlot fftPlot;
-        private NumericUpDown tBins;
+        public NumericUpDown tBins;
         private Label label2;
         private Label label1;
-        private NumericUpDown gBins;
+        public NumericUpDown gBins;
         private CheckBox edges;
         private Label label3;
-        private GroupBox procBox;
-        private NumericUpDown nBins;
+        public GroupBox procBox;
+        public NumericUpDown nBins;
         private Label label4;
         private Label label5;
-        private Label pass;
-        private Label fail;
-        private ListView therr;
-        private DataGridView peaksView;
+        public Label pass;
+        public Label fail;
+        public ListView therr;
+        public DataGridView peaksView;
         private DataGridViewTextBoxColumn Column1;
         private DataGridViewTextBoxColumn Column2;
         private DataGridViewTextBoxColumn Column3;
         private Label label6;
         private ColumnHeader columnHeader1;
+        private Label IscTv;
+        private Button loadICSTV;
     }
 }

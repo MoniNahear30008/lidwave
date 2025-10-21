@@ -1,28 +1,30 @@
 ﻿using ScottPlot;
-using System.Text.RegularExpressions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace lidwave
 {
-    public partial class Form1
+    public class cfar
     {
+        Form1 mainfrm;
         const int maxLen = 6;
-        uint[] buff;
-        uint[] TH = new uint[2048];
-        uint[,] peaks = new uint[2,2];
-        uint[] maxTH = new uint[maxLen] { 10, 10, 10, 10, 10, 10 };
-        List<tv> tvs = new List<tv>();
-        
+        public uint[] buff;
+        public uint[] TH = new uint[2048];
+        public uint[,] peaks = new uint[2, 2];
+        public uint[] maxTH = new uint[maxLen] { 10, 10, 10, 10, 10, 10 };
+        public List<cfartv> tvs = new List<cfartv>();
+        public List<List<uint>> eth = new List<List<uint>>();
 
-        private void initCFAR()
-        {
-            fftPlot.Configuration.DoubleClickBenchmark = false;
-            fftPlot.Configuration.LockVerticalAxis = true;
-            peaksView.Rows.Add(0, "na", "na");
-            peaksView.Rows.Add(1, "na", "na");
-
+        public cfar(Form1 parent) 
+        { 
+            mainfrm = parent;
         }
-        private void loadTv()
+
+        public void loadCfrTv()
         {
             OpenFileDialog lf = new OpenFileDialog();
             lf.Filter = "tv files (*.csv)|*.csv";
@@ -36,14 +38,14 @@ namespace lidwave
             int lcnt = tvt.Count;
             int nbuf = lcnt / 4098;
 
-            tvName.Text = fname + " contains " + nbuf.ToString() + " FFT buffers";
-            buffNum.Value = 0;
-            buffNum.Maximum = nbuf - 1;
+            mainfrm.tvName.Text = fname + " contains " + nbuf.ToString() + " FFT buffers";
+            mainfrm.buffNum.Value = 0;
+            mainfrm.buffNum.Maximum = nbuf - 1;
 
             int line = 0;
             for (int b = 0; b < nbuf; b++)
             {
-                tvs.Add(new tv());
+                tvs.Add(new cfartv());
                 uint fcnt = 0;
                 for (int i = 0; i < 4098; i++)
                 {
@@ -64,7 +66,7 @@ namespace lidwave
                     }
                     else if (fcnt < 2048)
                     {
-                        tvs.Last().fft[fcnt]= uint.Parse(numbers[0]);
+                        tvs.Last().fft[fcnt] = uint.Parse(numbers[0]);
                         tvs.Last().ths[fcnt] = uint.Parse(numbers[1]);
                         if (numbers[2] == "1")
                             tvs.Last().peaks.Add(fcnt);
@@ -73,41 +75,31 @@ namespace lidwave
                 }
             }
 
-            procBox.Enabled = true;
-            plotFFT();
+            mainfrm.procBox.Enabled = true;
         }
-        private void procFFTBuff()
-        {
-            pass.Visible = false;
-            fail.Visible = false;
-            peaksView.Rows[0].Cells[1].Value = "n.a.";
-            peaksView.Rows[1].Cells[1].Value = "n.a.";
-            peaksView.Rows[0].Cells[2].Value = "n.a.";
-            peaksView.Rows[1].Cells[2].Value = "n.a.";
-            therr.Items.Clear();
 
+        public bool procCFR()
+        {
             peaks = new uint[2, 2] { { 0, 0 }, { 0, 0 } };
-            int bnum = (int)buffNum.Value;
+            int bnum = (int)mainfrm.buffNum.Value;
             buff = tvs[bnum].fft.ToArray();
 
             // Calculate TH array with one sided on edges with peaks detect
             calcTh();
 
-            plotCFAR();
-
-            bool ispass = compare(true);
+            return(compare());
         }
-        private bool compare(bool withUI)
+        private bool compare()
         {
-            int bnum = (int)buffNum.Value;
-            tv testv = tvs[bnum];
+            int bnum = (int)mainfrm.buffNum.Value;
+            cfartv testv = tvs[bnum];
 
             // check TH
-            List<int> eth = new List<int>();
-            for (int i = 0; i < TH.Count(); i++)
+            eth.Clear();
+            for (uint i = 0; i < TH.Count(); i++)
             {
                 if (TH[i] != testv.ths[i])
-                    eth.Add(i);
+                    eth.Add(new List<uint>() { i, testv.ths[i], TH[i] });
             }
 
             // check peaks
@@ -120,56 +112,41 @@ namespace lidwave
             ipeaks.Sort();
 
             if (ipeaks.Count > 0)
-                peaksView.Rows[0].Cells[1].Value = ipeaks[0];
+                mainfrm.peaksView.Rows[0].Cells[1].Value = ipeaks[0];
             if (ipeaks.Count > 1)
-                peaksView.Rows[1].Cells[1].Value = ipeaks[1];
+                mainfrm.peaksView.Rows[1].Cells[1].Value = ipeaks[1];
 
             List<uint> cpeaks = new List<uint>();
-            if (peaks[0,0] != 0)
-                    cpeaks.Add(peaks[0,0]);
+            if (peaks[0, 0] != 0)
+                cpeaks.Add(peaks[0, 0]);
             if (peaks[1, 0] != 0)
                 cpeaks.Add(peaks[1, 0]);
             cpeaks.Sort();
 
             if (cpeaks.Count > 0)
-                peaksView.Rows[0].Cells[2].Value = cpeaks[0];
+                mainfrm.peaksView.Rows[0].Cells[2].Value = cpeaks[0];
             if (cpeaks.Count > 1)
-                peaksView.Rows[1].Cells[2].Value = cpeaks[1];
+                mainfrm.peaksView.Rows[1].Cells[2].Value = cpeaks[1];
 
-            bool[] perr = new bool[3] {false, false,  false};
+            bool[] perr = new bool[3] { false, false, false };
             if (cpeaks.Count != ipeaks.Count)
                 perr[0] = true;
             else
             {
                 for (int i = 0; i < cpeaks.Count; i++)
-                    perr[i+1] = ipeaks[i] != cpeaks[i];
+                    perr[i + 1] = ipeaks[i] != cpeaks[i];
             }
 
             if ((eth.Count == 0) && (perr[0] == false) && (perr[1] == false) && (perr[2] == false))
-            {
-                if (withUI)
-                    pass.Visible = true;
-                return false;
-            }
+                return true;
             else
-            {
-                if (withUI)
-                {
-                    fail.Visible = true;
-                    for (int i = 0; i < eth.Count; i++)
-                    {
-                        fftPlot.Plot.AddVerticalLine(eth[i], color: Color.Red, style: LineStyle.DashDot);
-                        therr.Items.Add(eth[i].ToString() + ":     " + testv.ths[eth[i]].ToString() + "         " + TH[eth[i]].ToString());
-                    }
-                }
-            }
-            return true;
+                return false;
         }
         private void calcTh()
         {
-            int T = (int)tBins.Value;
-            int G = (int)gBins.Value;   
-            int N = (int)nBins.Value;
+            int T = (int)mainfrm.tBins.Value;
+            int G = (int)mainfrm.gBins.Value;
+            int N = (int)mainfrm.nBins.Value;
 
             uint leftsum = 0;
             uint rightsum = 0;
@@ -278,86 +255,8 @@ namespace lidwave
                 }
             }
         }
-        private void plotFFT()
-        {
-            int bnum = (int)buffNum.Value;
-
-            int[] iX = Enumerable.Range(0, 2048).ToArray();
-            double[] X = Array.ConvertAll<int, double>(iX, x => x);
-            double[] dbuff = Array.ConvertAll<uint, double>(tvs[bnum].fft.ToArray(), x => x);
-            double[] dth = Array.ConvertAll<uint, double>(tvs[bnum].ths.ToArray(), x => x);
-
-            fftPlot.Plot.Clear();
-            fftPlot.Plot.AddScatter(X, dbuff, lineWidth: 1, color: Color.Blue, markerShape: ScottPlot.MarkerShape.filledCircle);
-            fftPlot.Plot.AddScatter(X, dth, lineWidth: 0, color: Color.Red);
-            foreach (uint p in tvs[bnum].peaks)
-                fftPlot.Plot.AddVerticalLine(p, color: Color.Lime);
-
-            fftPlot.Plot.AxisAutoX();
-            fftPlot.Plot.AxisAutoY();
-            fftPlot.Refresh();
-
-        }
-        private void plotCFAR()
-        {
-            int[] iX = Enumerable.Range(0, 2048).ToArray();
-            double[] X = Array.ConvertAll<int, double>(iX, x => x);
-            fftPlot.Plot.Clear();
-
-            double[] dbuff = Array.ConvertAll<uint, double>(buff, x => x);
-            fftPlot.Plot.AddScatter(X, dbuff, lineWidth: 1, color: Color.Blue, markerShape: ScottPlot.MarkerShape.openCircle);
-
-            double[] dTH = Array.ConvertAll<uint, double>(TH, x => x);
-            fftPlot.Plot.AddScatter(X, dTH, lineWidth: 0, color: Color.Red);
-
-            List<double> X1 = new List<double>();
-            List<double> Y1 = new List<double>();
-            for (int i = 0; i < TH.Count(); i++)
-            {
-                if (dbuff[i] > TH[i])
-                {
-                    X1.Add(i);
-                    Y1.Add(dbuff[i]);
-                }
-            }
-
-            fftPlot.Plot.AddScatter(X1.ToArray(), Y1.ToArray(), lineWidth: 0, color: Color.Green, markerShape: ScottPlot.MarkerShape.filledCircle);
-
-            if (peaks[0, 0] > 0)
-            {
-                uint bin = peaks[0, 0];
-                double est = ((double)buff[bin+1] - (double)buff[bin-1]) / (2 * ((2 * (double)buff[bin]) - (double)buff[bin-1] - (double)buff[bin+1]));
-                fftPlot.Plot.AddVerticalLine(peaks[0, 0], color: Color.Lime);
-                fftPlot.Plot.AddVerticalLine(peaks[0, 0] + est, color: Color.Lime, style: LineStyle.Dash);
-                fftPlot.Plot.AddHorizontalLine(peaks[0, 1], color: Color.DarkViolet, style: LineStyle.Dot);
-            }
-            if (peaks[1, 0] > 0)
-            {
-                uint bin = peaks[1, 0];
-                double est = ((double)buff[bin + 1] - (double)buff[bin - 1]) / (2 * ((2 * (double)buff[bin]) - (double)buff[bin - 1] - (double)buff[bin + 1]));
-                fftPlot.Plot.AddVerticalLine(peaks[1, 0], color: Color.Lime);
-                fftPlot.Plot.AddVerticalLine(peaks[1, 0] + est, color: Color.Lime, style: LineStyle.Dash);
-                fftPlot.Plot.AddHorizontalLine(peaks[1, 1], color: Color.DarkViolet, style: LineStyle.Dot);
-            }
-
-            fftPlot.Plot.AxisAutoX();
-            fftPlot.Plot.AxisAutoY();
-            fftPlot.Refresh();
-
-            //using (StreamWriter writetext = new StreamWriter("c:\\Lidwave\\Tools\\res.txt"))
-            //{
-            //    writetext.WriteLine("TH");
-            //    foreach (uint t in TH)
-            //        writetext.WriteLine(t.ToString());
-            //    writetext.WriteLine("Peaks");
-            //    writetext.WriteLine(peaks[0,0].ToString());
-            //    writetext.WriteLine(peaks[1, 0].ToString());
-            //}
-        }
-
     }
-
-    public class tv
+    public class cfartv
     {
         public uint T;
         public uint G;
@@ -365,7 +264,7 @@ namespace lidwave
         public uint[] fft;
         public uint[] ths;
         public List<uint> peaks;
-        public tv()
+        public cfartv()
         {
             maxTH = new List<uint>();
             fft = new uint[2048];
@@ -373,4 +272,6 @@ namespace lidwave
             peaks = new List<uint>();
         }
     }
+
+
 }
