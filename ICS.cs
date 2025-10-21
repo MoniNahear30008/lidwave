@@ -3,15 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace lidwave
 {
-    public partial class Form1
+    public class ics
     {
-        uint[,,] icsBuff = new uint[3, 6, 2048];
-        uint[] newBuff = new uint[2048];
+        Form1 mainfrm;
+        const int testLen = 28672;
+        public uint[,,] icsBuff = new uint[3, 6, 2048];
+        public uint[] newBuff = new uint[2048];
 
-        private void loadIcsTv()
+        public ics(Form1 mainfrm)
+        {
+            this.mainfrm = mainfrm;
+        }
+
+        public void loadIcsTv()
         {
             OpenFileDialog lf = new OpenFileDialog();
             lf.Filter = "tv files (*.csv)|*.csv";
@@ -21,14 +29,14 @@ namespace lidwave
                 return;
 
             string fname = lf.FileName;
-            tvName.Text = fname;
+            mainfrm.IscTv.Text = fname;
 
             List<string> tvt = File.ReadAllLines(lf.FileName).ToList();
             int lcnt = tvt.Count;
-            int nbuf = lcnt / 4098;
+            int nbuf = lcnt / testLen;
 
-            buffNum.Value = 0;
-            buffNum.Maximum = nbuf - 1;
+            //buffNum.Value = 0;
+            //buffNum.Maximum = nbuf - 1;
 
             //int line = 0;
             //for (int b = 0; b < nbuf; b++)

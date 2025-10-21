@@ -5,6 +5,7 @@ namespace lidwave
     public partial class Form1 : Form
     {
         cfar cfar;
+        ics ics;
         public Form1()
         {
             InitializeComponent();
@@ -15,6 +16,7 @@ namespace lidwave
             peaksView.Rows.Add(1, "na", "na");
 
             cfar = new cfar(this);
+            ics = new ics(this);
         }
 
         private void loadTV_Click(object sender, EventArgs e)
@@ -131,7 +133,7 @@ namespace lidwave
 
         private void loadICSTV_Click(object sender, EventArgs e)
         {
-
+            ics.loadIcsTv();
         }
     }
 }

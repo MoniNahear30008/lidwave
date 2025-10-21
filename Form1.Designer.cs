@@ -470,7 +470,7 @@
         private DataGridViewTextBoxColumn Column3;
         private Label label6;
         private ColumnHeader columnHeader1;
-        private Label IscTv;
+        public Label IscTv;
         private Button loadICSTV;
     }
 }
